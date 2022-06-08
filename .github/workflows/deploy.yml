@@ -21,8 +21,15 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Upload to Deno Deploy
-        uses: denoland/deployctl@v1
+      - name: Install Deno
+        use: denoland/setup-deno@v1
         with:
-          project: "benpops89-remix-deno"
-          entrypoint: "./build/index.js"
+          deno-version: vx.x.x
+
+      - name: Deno Deploy CLI
+        run: deno install --allow-read --allow-write --allow-env --allow-net --allow-run --no-check -r -f https://deno.land/x/deploy/deployctl.ts
+
+      - name: Deploy to Deno
+        run: deployctl deploy --project=benpops89-remix-deno --include=.cache,build,public ./build/index.js
+        env:
+          DENO_DEPLOY_TOKEN: ${{ secrets.DENO_DEPLOY_TOKEN }}
